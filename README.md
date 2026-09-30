@@ -1,3 +1,7 @@
+> **本仓用途（deserthouse）**：为 PatchAndFlash 项目自建可复现的 Windows 版 magiskboot。
+> 基座 = PinNaCode/magiskbot_build（Apache-2.0，已归档），Magisk 源码 pin 在 b22b6a4（v27.0 canary 27002）。
+> 升级上游 Magisk pin 与补丁维护在本仓进行；产物仅供 PatchAndFlash 使用，Magisk 部分为 GPL-3.0（源码随本仓子模块与补丁提供）。
+
 # Later developments (a rewrite) continues at https://github.com/dropout-zzz/Magisk
 
 ---
