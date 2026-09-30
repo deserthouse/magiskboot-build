@@ -87,5 +87,10 @@ target_link_libraries(magiskboot_exe
     libzopfli
     Threads::Threads)
 
+if(WIN32)
+    # rust getrandom (rand) uses BCryptGenRandom on Windows targets
+    target_link_libraries(magiskboot_exe bcrypt)
+endif()
+
 include(GNUInstallDirs)
 install(TARGETS magiskboot_exe DESTINATION ${CMAKE_INSTALL_BINDIR})
