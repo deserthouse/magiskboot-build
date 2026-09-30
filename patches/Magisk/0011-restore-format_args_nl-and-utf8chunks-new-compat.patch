@@ -1,0 +1,50 @@
+Subject: [mbb-compat] Restore format_args_nl and Utf8Chunks::new for rustc >= 1.79+
+
+rustc removed the internal builtin macro `format_args_nl` and never exposed a
+public `Utf8Chunks::new` constructor. Reintroduce the former as a macro_rules
+wrapper with identical semantics (format_args! + trailing newline) at the base
+crate root so every module and downstream macro sees it, and construct chunks
+via the stable `<[u8]>::utf8_chunks()` accessor instead.
+
+Applies on top of 0001-0010 (import-block context matches post-0009 state).
+
+--- a/native/src/base/lib.rs
++++ b/native/src/base/lib.rs
+@@ -3,6 +3,18 @@
+ #![feature(io_error_more)]
+ #![feature(utf8_chunks)]
+ 
++// Compat: rustc no longer exports the internal builtin macro
++// `format_args_nl`. Provide an equivalent macro_rules wrapper: the same
++// expansion as format_args! with a trailing newline. Defined at the crate
++// root before all module declarations so every mod sees it textually.
++macro_rules! format_args_nl {
++    ($($arg:tt)*) => {
++        format_args!("{}\n", format_args!($($arg)*))
++    };
++}
++
++// Compat: base/cstr.rs now constructs Utf8Chunks via the stable
++// `<[u8]>::utf8_chunks()` accessor (see cstr.rs hunk in this patch).
+ pub use const_format;
+ pub use libc;
+ use num_traits::FromPrimitive;
+--- a/native/src/base/cstr.rs
++++ b/native/src/base/cstr.rs
+@@ -8,5 +8,5 @@
+ 
+ use std::path::{Path, PathBuf};
+-use std::str::{Utf8Chunks, Utf8Error};
++use std::str::Utf8Error;
+ use std::{fmt, mem, slice, str};
+ 
+ use crate::slice_from_ptr_mut;
+@@ -55,7 +55,7 @@
+ }
+ 
+ fn utf8_cstr_append_lossy(buf: &mut dyn Utf8CStrWrite, s: &[u8]) -> usize {
+-    let chunks = Utf8Chunks::new(s);
++    let chunks = s.utf8_chunks();
+     let mut len = 0_usize;
+     for chunk in chunks {
+         len += buf.push_str(chunk.valid());
