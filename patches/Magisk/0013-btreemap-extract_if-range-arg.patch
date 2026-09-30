@@ -1,0 +1,18 @@
+Subject: [mbb-compat] Adapt BTreeMap::extract_if call to the stabilized signature
+
+BTreeMap::extract_if stabilized in Rust 1.87 with an added range parameter;
+the pinned v27 source used the old nightly 1-argument form.
+
+diff --git a/native/src/boot/cpio.rs b/native/src/boot/cpio.rs
+index e5a5291..1c35330 100644
+--- a/native/src/boot/cpio.rs
++++ b/native/src/boot/cpio.rs
+@@ -571,7 +571,7 @@ impl Cpio {
+         let mut backups = HashMap::<String, Box<CpioEntry>>::new();
+         let mut rm_list = String::new();
+         self.entries
+-            .extract_if(|name, _| name.starts_with(".backup/"))
++            .extract_if(.., |name, _| name.starts_with(".backup/"))
+             .for_each(|(name, mut entry)| {
+                 if name == ".backup/.rmlist" {
+                     if let Ok(data) = str::from_utf8(&entry.data) {
