@@ -6,7 +6,7 @@ wrapper with identical semantics (format_args! + trailing newline) at the base
 crate root so every module and downstream macro sees it, and construct chunks
 via the stable `<[u8]>::utf8_chunks()` accessor instead.
 
-Applies on top of 0001-0010 (import-block context matches post-0009 state).
+Applies on top of 0001-0010 (hunk contexts verified against post-0010 tree).
 
 --- a/native/src/base/lib.rs
 +++ b/native/src/base/lib.rs
@@ -31,20 +31,15 @@ Applies on top of 0001-0010 (import-block context matches post-0009 state).
  use num_traits::FromPrimitive;
 --- a/native/src/base/cstr.rs
 +++ b/native/src/base/cstr.rs
-@@ -8,5 +8,5 @@
- 
+@@ -8,3 +8,3 @@
  use std::path::{Path, PathBuf};
 -use std::str::{Utf8Chunks, Utf8Error};
 +use std::str::Utf8Error;
  use std::{fmt, mem, slice, str};
- 
- use crate::slice_from_ptr_mut;
-@@ -55,7 +55,7 @@
- }
+@@ -56,6 +56,6 @@
  
  fn utf8_cstr_append_lossy(buf: &mut dyn Utf8CStrWrite, s: &[u8]) -> usize {
 -    let chunks = Utf8Chunks::new(s);
 +    let chunks = s.utf8_chunks();
      let mut len = 0_usize;
      for chunk in chunks {
-         len += buf.push_str(chunk.valid());
