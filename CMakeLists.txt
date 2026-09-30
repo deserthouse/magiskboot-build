@@ -19,7 +19,7 @@ option(WITH_LIBCXX "Link libcxx instead of libstdc++" ON)
 option(FULL_RUST_LTO "Keep LLVM bitcode in Rust libraries for LTO (requires LLD)" OFF)
 set(RUSTFLAGS "" CACHE STRING "extra flags passed to rustc")
 set(CARGO_FLAGS "" CACHE STRING "extra flags passed to cargo")
-set(RUSTC_BOOTSTRAP "winsup,base,magiskboot" CACHE STRING "")
+set(RUSTC_BOOTSTRAP "1" CACHE STRING "")
 
 # useful for cross-compiling
 option(RUST_BUILD_STD "Build Rust standard library" OFF)
