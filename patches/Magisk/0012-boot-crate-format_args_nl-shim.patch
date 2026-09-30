@@ -1,0 +1,25 @@
+Subject: [mbb-compat] Mirror format_args_nl shim into the boot crate
+
+Macro names in macro_rules bodies are not hygienic: base's logging macros
+(error!/warn!/log_err!/...) expand `format_args_nl!` in the textual scope of
+the *expanding* crate, so the boot crate needs its own copy of the 0011 shim
+(rustc no longer provides the internal builtin).
+
+diff --git a/native/src/boot/lib.rs b/native/src/boot/lib.rs
+index 2adf691..953fe2c 100644
+--- a/native/src/boot/lib.rs
++++ b/native/src/boot/lib.rs
+@@ -2,6 +2,13 @@
+ #![feature(btree_extract_if)]
+ #![feature(iter_intersperse)]
+ 
++// Compat (0012): mirror of the 0011 base-crate shim; see 0011 for rationale.
++macro_rules! format_args_nl {
++    ($($arg:tt)*) => {
++        format_args!("{}\n", format_args!($($arg)*))
++    };
++}
++
+ pub use base;
+ use cpio::cpio_commands;
+ use dtb::dtb_commands;
