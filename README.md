@@ -1,16 +1,17 @@
-> **本仓用途（deserthouse）**：为 PatchAndFlash 项目自建可复现的 Windows 版 magiskboot。
+> **本仓用途（deserthouse）**：为 PatchAndFlash 项目自建 Windows 版 magiskboot——从固定 pin 的上游源码**可重新构建**（rebuildable）；未承诺位级可复现（CI 运行器与 MSYS2 依赖未完全固定，详见下方构建说明）。
 > 基座 = PinNaCode/magiskbot_build（Apache-2.0，已归档），Magisk 源码 pin 在 b22b6a4（v27.0 canary 27002）。
-> 升级上游 Magisk pin 与补丁维护在本仓进行；产物仅供 PatchAndFlash 使用，Magisk 部分为 GPL-3.0（源码随本仓子模块与补丁提供）。
+> 升级上游 Magisk pin 与补丁维护在本仓进行；产物仅供 PatchAndFlash 使用。**许可两层**：构建脚本层 = Apache-2.0（基座）；magiskboot 源码与二进制 = GPL-3.0（见 LICENSE.magiskboot，源码随本仓子模块与补丁提供）。
 
-# Later developments (a rewrite) continues at https://github.com/dropout-zzz/Magisk
+# 上游脉络（参考，均为外部维护、与本仓无关联）：基座 PinNaCode/magiskbot_build ← 源系 ookiineko/magiskboot_build；Magisk 上游重写版见 https://github.com/dropout-zzz/Magisk
 
 ---
+
+> **以下为继承自上游的原始 README**（保留作构建参考；其中的 CI 徽章、下载与 issue 入口一律以上方本仓说明为准）。
 
 ## magiskboot_build
 
 ![Magisk Version Badge](https://img.shields.io/badge/Magisk%20version-v27.0%20Canary%20(27002)-green?logo=magisk)
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ookiineko/magiskboot_build/ci.yaml?logo=githubactions&logoColor=orange&label=CI%20build)
-![Last Upstream Sync Date](https://img.shields.io/github/gist/last-commit/cc0e3019a9107116d12df1e94e4a5c79?logo=git&label=Last%20upstream%20sync&color=blue)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/deserthouse/magiskboot-build/ci.yaml?logo=githubactions&logoColor=orange&label=CI%20build)
 
 a simple portable CMake-based build system for magiskboot
 
