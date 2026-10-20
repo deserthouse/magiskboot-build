@@ -4,10 +4,13 @@ on:
     inputs:
       debug_release:
         type: boolean
-        description: "Whether if we are creating a debug release"
+        description: "Whether if we are creating a debug release (rolling last-debug-ci prerelease)"
       ci_run_id:
         description: "Run ID of the desired CI run to download artifacts from"
         required: true
+      tag_name:
+        description: "Tag for the formal release (required when debug_release=false), e.g. magiskboot-v27.0.27002-r2"
+        required: false
 
 permissions:
   contents: write
@@ -18,6 +21,44 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Verify selected CI run and resolve its source SHA
+        id: ci
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.event.inputs.ci_run_id }}
+        run: |
+          set -eu
+          run_json="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}")"
+          status="$(jq -r .status <<<"$run_json")"
+          conclusion="$(jq -r .conclusion <<<"$run_json")"
+          head_sha="$(jq -r .head_sha <<<"$run_json")"
+          head_repo="$(jq -r .head_repository.full_name <<<"$run_json")"
+          if [ "$status" != "completed" ] || [ "$conclusion" != "success" ]; then
+            echo "::error::CI run ${RUN_ID} is ${status}/${conclusion}; only completed successful runs can be released"
+            exit 1
+          fi
+          if [ "$head_repo" != "${GITHUB_REPOSITORY}" ]; then
+            echo "::error::CI run ${RUN_ID} belongs to head repository ${head_repo}, not ${GITHUB_REPOSITORY}"
+            exit 1
+          fi
+          echo "head_sha=${head_sha}" >> "$GITHUB_OUTPUT"
+
+      - name: Check tag availability (formal releases are immutable)
+        if: github.event.inputs.debug_release != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ github.event.inputs.tag_name }}
+        run: |
+          set -eu
+          if [ -z "${TAG_NAME}" ]; then
+            echo "::error::tag_name input is required for formal releases (e.g. magiskboot-v27.0.27002-r2)"
+            exit 1
+          fi
+          if gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG_NAME}" >/dev/null 2>&1; then
+            echo "::error::tag ${TAG_NAME} already has a release; formal releases are immutable — publish a new build under a new tag"
+            exit 1
+          fi
 
       - name: Download artifacts
         id: download-artifact
@@ -36,7 +77,7 @@ jobs:
           file magiskboot_*-src.tar.xz
           rm -f srcpkg.zip
 
-      - name: Clean up old releases (Debug)
+      - name: Clean up old releases (Debug rolling channel only)
         if: github.event.inputs.debug_release == 'true'
         uses: dev-drprasad/delete-older-releases@v0.3.2
         with:
@@ -46,27 +87,17 @@ jobs:
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Clean up old releases (Release)
-        if: github.event.inputs.debug_release != 'true'
-        uses: dev-drprasad/delete-older-releases@v0.3.2
-        with:
-            keep_latest: 0
-            delete_tags: true
-            delete_tag_pattern: last-ci
-        env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Wait for 3s
         run: |
           # prevent github to think our release already exists and create us a draft
           sleep 3
 
-      - name: Create release (Debug)
+      - name: Create release (Debug rolling channel)
         if: github.event.inputs.debug_release == 'true'
         uses: softprops/action-gh-release@v1
         with:
             name: Last debug CI build
-            target_commitish: dev
+            target_commitish: ${{ steps.ci.outputs.head_sha }}
             tag_name: last-debug-ci
             body_path: ${{ github.workspace }}/.github/__debug_release_template.md
             draft: false
@@ -76,13 +107,13 @@ jobs:
               artifacts/magiskboot_*-src.tar.xz
               artifacts/*.zip
 
-      - name: Create release (Release)
+      - name: Create release (formal, immutable)
         if: github.event.inputs.debug_release != 'true'
         uses: softprops/action-gh-release@v1
         with:
-            name: Last CI build
-            target_commitish: dev
-            tag_name: last-ci
+            name: ${{ github.event.inputs.tag_name }}
+            target_commitish: ${{ steps.ci.outputs.head_sha }}
+            tag_name: ${{ github.event.inputs.tag_name }}
             body_path: ${{ github.workspace }}/.github/__release_template.md
             draft: false
             prerelease: false
