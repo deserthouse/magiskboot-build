@@ -1,8 +1,14 @@
+# magiskboot-build
+
 > **本仓用途（deserthouse）**：为 PatchAndFlash 项目自建 Windows 版 magiskboot——从固定 pin 的上游源码**可重新构建**（rebuildable）；未承诺位级可复现（CI 运行器与 MSYS2 依赖未完全固定，详见下方构建说明）。
 > 基座 = PinNaCode/magiskbot_build（Apache-2.0，已归档），Magisk 源码 pin 在 b22b6a4（v27.0 canary 27002）。
 > 升级上游 Magisk pin 与补丁维护在本仓进行；产物仅供 PatchAndFlash 使用。**许可两层**：构建脚本层 = Apache-2.0（基座）；magiskboot 源码与二进制 = GPL-3.0（见 LICENSE.magiskboot，源码随本仓子模块与补丁提供）。
 
-# 上游脉络（参考，均为外部维护、与本仓无关联）：基座 PinNaCode/magiskbot_build ← 源系 ookiineko/magiskboot_build；Magisk 上游重写版见 https://github.com/dropout-zzz/Magisk
+上游脉络（参考，均为外部维护、与本仓无关联）：基座 PinNaCode/magiskbot_build ← 源系 ookiineko/magiskboot_build；Magisk 上游重写版见 https://github.com/dropout-zzz/Magisk
+
+Windows x86_64 可执行文件与对应源码包见 [Releases](https://github.com/deserthouse/magiskboot-build/releases)。
+
+**AI 使用声明（本仓维护文档）**　本项目不含任何人类成分。上游 Magisk 与构建脚本的作者及许可证见上文。
 
 ---
 
@@ -62,7 +68,7 @@ export PATH=/path/to/your/ondk/toolchains/rust/bin:$PATH
 >
 > Termux build is not actively tested by CI, but it might work without problem.
 >
-> If you find the build is broken, please file a [bug report](../../issues).
+> If you find the build is broken, please file a [bug report](https://github.com/deserthouse/magiskboot-build/issues).
 
 ````shell
 apt update
@@ -167,7 +173,7 @@ If you are cross-compiling from a non-Windows host and using vcpkg to manage the
 
 > **Note**
 >
-> You can get a prebuilt binary at [GitHub releases](../../releases/tag/cygwin-test).
+> This repository distributes the Windows x86_64 build. Cygwin instructions below are retained for source builds.
 
 To build for Cygwin, you need to compile a Rust toolchain from source, for more info: [Cygwin Rust porting](https://gist.github.com/ookiineko/057eb3a91825313caeaf6d793a33b0b2)
 
@@ -195,7 +201,7 @@ On arch-cygwin, set `CYGWIN_CC` and `CYGWIN_CXX` to `x86_64-pc-cygwin-clang` and
 >
 > A web frontend wrapper must be written to handle the argument passing and file system management in browsers.
 >
-> This should be implemented soon in the future ([#19](../../issues/19)), but unfortunately I am not a web developer, any help on this will be welcome QwQ
+> Browser use requires a separate frontend. The Windows release does not include one.
 
 Please read the [Cross compiling](#cross-compiling) instructions first.
 
@@ -231,11 +237,11 @@ Please refer to [Magisk documentation](https://topjohnwu.github.io/Magisk/tools.
 >
 > Please, do ***NOT*** report magiskboot_build bugs to the upstream Magisk!
 
-For prebuilt binaries, go check [GitHub Releases](../../releases/latest) for selected CI builds.
+For prebuilt binaries, go check [GitHub Releases](https://github.com/deserthouse/magiskboot-build/releases/latest) for selected CI builds.
 
 ### Build & Install
 
-First get and extract the latest source tarball (called `magiskboot_<COMMIT_ID>_<VERCODE>-src.tar.xz`) from [Github Releases](../../releases/latest).
+First get and extract the latest source tarball (called `magiskboot_<COMMIT_ID>_<VERCODE>-src.tar.xz`) from [Github Releases](https://github.com/deserthouse/magiskboot-build/releases/latest).
 
 Or clone this repository using Git, note that cloning with `--recurse-submodules` is not recommended, and you should run `scripts/clone_submodules.sh` after clone because it skips the submodules that is not necessary for building magiskboot.
 
@@ -343,7 +349,7 @@ you should be able to find your source package under the `build` folder
 
 #### Something isn't working
 
-Please use debug builds and paste your information (like crash or error logs) in a new [Issue](../../issues).
+Please use debug builds and paste your information (like crash or error logs) in a new [Issue](https://github.com/deserthouse/magiskboot-build/issues).
 
 #### Can I build without Libcxx?
 
@@ -365,7 +371,7 @@ Although I may update the version once in a while, [Pull requests](../../pulls) 
 
 This project aims to be portable, it should be possible to port it to new platforms with some efforts, as long as your platform meets the the above [requirements](#requirements).
 
-Feel free to add an [Issue](../../issues) about support on your new platform.
+Feel free to add an [Issue](https://github.com/deserthouse/magiskboot-build/issues) about support on your new platform.
 
 ### Development
 
