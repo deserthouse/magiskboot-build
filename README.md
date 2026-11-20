@@ -1,14 +1,16 @@
 # magiskboot-build
 
-> **本仓用途（deserthouse）**：为 PatchAndFlash 项目自建 Windows 版 magiskboot——从固定 pin 的上游源码**可重新构建**（rebuildable）；未承诺位级可复现（CI 运行器与 MSYS2 依赖未完全固定，详见下方构建说明）。
-> 基座 = PinNaCode/magiskbot_build（Apache-2.0，已归档），Magisk 源码 pin 在 b22b6a4（v27.0 canary 27002）。
-> 升级上游 Magisk pin 与补丁维护在本仓进行；产物仅供 PatchAndFlash 使用。**许可两层**：构建脚本层 = Apache-2.0（基座）；magiskboot 源码与二进制 = GPL-3.0（见 LICENSE.magiskboot，源码随本仓子模块与补丁提供）。
+为 [Patch & Flash](https://github.com/deserthouse/PatchAndFlash) 构建 Windows x86_64 版 magiskboot。源码和补丁已固定，CI 运行器与 MSYS2 依赖尚未完全固定，当前只承诺可重新构建。
+
+[下载可执行文件与对应源码](https://github.com/deserthouse/magiskboot-build/releases) · [magiskboot 许可](LICENSE.magiskboot)
+
+基于已归档的 PinNaCode/magiskbot_build（Apache-2.0）。Magisk 源码固定到 `b22b6a4`（v27.0 canary 27002），源码与二进制使用 GPL-3.0。
 
 上游脉络（参考，均为外部维护、与本仓无关联）：基座 PinNaCode/magiskbot_build ← 源系 ookiineko/magiskboot_build；Magisk 上游重写版见 https://github.com/dropout-zzz/Magisk
 
-Windows x86_64 可执行文件与对应源码包见 [Releases](https://github.com/deserthouse/magiskboot-build/releases)。
+## AI 使用声明
 
-**AI 使用声明（本仓维护文档）**　本项目不含任何人类成分。上游 Magisk 与构建脚本的作者及许可证见上文。
+本项目不含任何人类成分。AI 协助撰写本仓的维护文档，维护者负责审阅。上游 Magisk 源码及构建脚本保留各自的署名和许可。
 
 ---
 
@@ -365,7 +367,7 @@ Check the version status badges at [the top of README](#magiskboot_build).
 
 This project is very similiar to [android-tools][android-tools] which just maintains a set of patches on top of a specific upstream Magisk commit and require manual adaption for compiling with newer source.
 
-Although I may update the version once in a while, [Pull requests](../../pulls) are welcome.
+Although I may update the version once in a while, [Pull requests](https://github.com/deserthouse/magiskboot-build/pulls) are welcome.
 
 #### Can you add ... platform support?
 
